@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from google import genai
 from google.genai.errors import APIError
@@ -6,7 +7,7 @@ import io
 
 # ⚠️ CẢNH BÁO: Đặt Khóa API trực tiếp vào code không được khuyến nghị!
 # THAY THẾ CHUỖI NÀY BẰNG KHÓA API GEMINI THẬT CỦA BẠN
-MY_GEMINI_API_KEY = "AIzaSyChwdiXZh1QsKkyYFisTd4dZ0JENrfz18Q"  
+MY_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Khởi tạo Client Gemini toàn cục
 @st.cache_resource
