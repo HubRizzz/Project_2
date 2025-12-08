@@ -41,39 +41,68 @@ if 'history' not in st.session_state:
 
 # --- Cấu hình Trang Web ---
 st.set_page_config(page_title="Project_2", layout="centered")
-st.title("🚮 Trang Web Hỗ Trợ Phân Loại Rác & Bảo Vệ Môi Trường")
-st.info(f"AI đang hoạt động với vai trò: **Chuyên gia Phân loại Rác**")
 
 
 # =========================================================================
-# === KHU VỰC HIỂN THỊ LỊCH SỬ VÀ NÚT XÓA (SIDEBAR) ===
+# === KHU VỰC GIỚI THIỆU TRONG SIDEBAR (BƯỚC 1) ===
 # =========================================================================
 
-# 1. Đặt Tiêu đề Sidebar
-st.sidebar.header("🕰️ Lịch Sử Phân Loại")
+st.sidebar.title("🌱 AI Phân Loại Rác")
+st.sidebar.markdown("""
+👋 **Chào bạn!** Web này giúp bạn:
+- 📸 Chụp ảnh rác  
+- ✍️ Nhập mô tả  
+- 🤖 Nhận tư vấn phân loại
+- 📜 Xem lại lịch sử
 
-# 2. Định nghĩa hàm xóa lịch sử
+---
+
+### ♻️ Các loại rác:
+- **Tái chế**: chai nhựa, lon, giấy
+- **Hữu cơ**: thức ăn thừa, vỏ trái cây
+- **Vô cơ**: pin, gốm, rác khó phân hủy
+
+---
+
+💡 *Hãy cùng bảo vệ môi trường!*
+""")
+
+
+# =========================================================================
+# === KHU VỰC HIỂN THỊ LỊCH SỬ VÀ NÚT XÓA (BƯỚC 2 & 3) ===
+# =========================================================================
+
+st.sidebar.markdown("---")
+st.sidebar.title("📜 LỊCH SỬ PHÂN LOẠI")
+
 def clear_history():
     st.session_state.history = []
+    st.sidebar.success("Đã xóa lịch sử!") # Thông báo thành công khi xóa
 
-# 3. Hiển thị Lịch Sử hoặc Thông báo
 if st.session_state.history:
-    # HIỂN THỊ NÚT XÓA KHI CÓ LỊCH SỬ
-    st.sidebar.button("🗑️ Xóa Lịch Sử", on_click=clear_history)
     
-    # Hiển thị Lịch Sử
-    for item in reversed(st.session_state.history):
-        with st.sidebar.expander(f"[{item['time']}] - {item['input'][:30]}..."):
-            st.markdown(f"**Nguồn ảnh:** {item['image']}")
-            st.markdown(f"**Yêu cầu:** {item['input']}")
-            st.markdown(f"**Phản hồi Gemini:** {item['response']}")
+    # NÚT XÓA LỊCH SỬ (BƯỚC 3)
+    # on_click được dùng để chạy hàm clear_history mà không cần khối if/else bên ngoài
+    st.sidebar.button("🗑️ Xóa toàn bộ lịch sử", on_click=clear_history) 
+
+    # HIỂN THỊ LỊCH SỬ (BƯỚC 2 - Phiên bản tối ưu hơn)
+    for i, item in enumerate(reversed(st.session_state.history), 1):
+        st.sidebar.markdown(f"### 🔹 Lần {i}")
+        st.sidebar.write("🕒", item["time"])
+        # Dùng tên khóa đã lưu là 'input' và 'response'
+        st.sidebar.write("👤 Mô tả:", item["input"])
+        st.sidebar.write("🤖 Kết quả:", item["response"])
+        st.sidebar.markdown("---")
 else:
-    # HIỂN THỊ KHI KHÔNG CÓ LỊCH SỬ
-    st.sidebar.write("Chưa có lịch sử phân loại nào trong phiên này.")
+    st.sidebar.info("Chưa có lịch sử nào trong phiên này.")
+
 
 # =========================================================================
 # === KHU VỰC CHÍNH CỦA ỨNG DỤNG ===
 # =========================================================================
+
+st.title("🚮 Trang Web Hỗ Trợ Phân Loại Rác & Bảo Vệ Môi Trường")
+st.info(f"AI đang hoạt động với vai trò: **Chuyên gia Phân loại Rác**")
 
 if client:
     # --- Thiết lập Cổng nhập liệu Ảnh và Văn bản ---
