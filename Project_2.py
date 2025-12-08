@@ -102,7 +102,18 @@ if client:
                     st.markdown(response.text)
                     
                 except APIError as e:
-                    st.error(f"Lỗi API: Không thể hoàn thành yêu cầu. Chi tiết: {e}")
+                    # Logic bắt lỗi bạn muốn thêm vào:
+                    if "429" in str(e):
+                        st.error("Hôm nay bạn đã dùng hết lượt miễn phí. Vui lòng quay lại vào ngày mai.")
+                    elif "quota" in str(e):
+                        # Lỗi 'quota' thường xuất hiện cùng với lỗi 429
+                        # Tuy nhiên, nếu bạn muốn xử lý nó riêng biệt,
+                        # chúng ta sẽ dùng elif. Nếu lỗi 429 đã bắt được,
+                        # code này sẽ không chạy (vì lỗi 429 thường chứa 'quota').
+                        # Tôi dùng elif để tuân thủ logic bạn muốn.
+                        st.info("Hiện tại hệ thống đang quá tải. Vui lòng thử lại sau.")
+                    else:
+                        st.error(f"Lỗi API: {e}")
                 except Exception as e:
                     st.error(f"Lỗi không xác định: {e}")
 else:
