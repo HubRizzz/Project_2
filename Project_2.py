@@ -4,6 +4,7 @@ from google import genai
 from google.genai.errors import APIError
 from PIL import Image
 import io
+from datetime import datetime
 
 # ⚠️ CẢNH BÁO: Đặt Khóa API trực tiếp vào code không được khuyến nghị!
 MY_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -33,10 +34,46 @@ SYSTEM_INSTRUCTION = (
 )
 # -----------------------------------------------------------------
 
+# --- KHỞI TẠO BỘ NHỚ LỊCH SỬ ---
+if 'history' not in st.session_state:
+    st.session_state.history = []
+# -----------------------------
+
 # --- Cấu hình Trang Web ---
 st.set_page_config(page_title="Project_2", layout="centered")
 st.title("🚮 Trang Web Hỗ Trợ Phân Loại Rác & Bảo Vệ Môi Trường")
 st.info(f"AI đang hoạt động với vai trò: **Chuyên gia Phân loại Rác**")
+
+
+# =========================================================================
+# === KHU VỰC HIỂN THỊ LỊCH SỬ VÀ NÚT XÓA (SIDEBAR) ===
+# =========================================================================
+
+# 1. Đặt Tiêu đề Sidebar
+st.sidebar.header("🕰️ Lịch Sử Phân Loại")
+
+# 2. Định nghĩa hàm xóa lịch sử
+def clear_history():
+    st.session_state.history = []
+
+# 3. Hiển thị Lịch Sử hoặc Thông báo
+if st.session_state.history:
+    # HIỂN THỊ NÚT XÓA KHI CÓ LỊCH SỬ
+    st.sidebar.button("🗑️ Xóa Lịch Sử", on_click=clear_history)
+    
+    # Hiển thị Lịch Sử
+    for item in reversed(st.session_state.history):
+        with st.sidebar.expander(f"[{item['time']}] - {item['input'][:30]}..."):
+            st.markdown(f"**Nguồn ảnh:** {item['image']}")
+            st.markdown(f"**Yêu cầu:** {item['input']}")
+            st.markdown(f"**Phản hồi Gemini:** {item['response']}")
+else:
+    # HIỂN THỊ KHI KHÔNG CÓ LỊCH SỬ
+    st.sidebar.write("Chưa có lịch sử phân loại nào trong phiên này.")
+
+# =========================================================================
+# === KHU VỰC CHÍNH CỦA ỨNG DỤNG ===
+# =========================================================================
 
 if client:
     # --- Thiết lập Cổng nhập liệu Ảnh và Văn bản ---
@@ -57,12 +94,15 @@ if client:
 
     # --- LOGIC ƯU TIÊN ẢNH ---
     image_to_process = None
+    image_source_name = None
     if camera_image is not None:
         # Ưu tiên số 1: Ảnh chụp từ camera
         image_to_process = Image.open(camera_image)
+        image_source_name = "Ảnh chụp Camera"
     elif uploaded_file is not None:
         # Ưu tiên số 2: Ảnh được tải lên
         image_to_process = Image.open(uploaded_file)
+        image_source_name = f"Tệp: {uploaded_file.name}"
         
     
     # Hiển thị ảnh đã chọn/chụp (nếu có)
@@ -70,7 +110,7 @@ if client:
         st.image(image_to_process, caption='Hình ảnh rác đang chờ phân loại.', use_column_width=True)
     
     # Nút bấm để gửi yêu cầu
-    if st.button("♻️ Gửi!!"):
+    if st.button("♻️ Gửi!!", disabled=not (user_prompt or image_to_process)):
         
         # Kiểm tra dữ liệu đầu vào tối thiểu
         if not user_prompt and not image_to_process:
@@ -87,7 +127,8 @@ if client:
                 contents.append(image_to_process)
             
             # 3. Thêm Prompt của Người Dùng (hoặc thông báo rỗng nếu không nhập)
-            contents.append(user_prompt if user_prompt else "Người dùng chỉ cung cấp hình ảnh.")
+            input_text = user_prompt if user_prompt else "(Chỉ cung cấp hình ảnh)"
+            contents.append(input_text)
 
             with st.spinner("Đang suy nghĩ và đưa ra lời khuyên để phân loại rác và bảo vệ môi trường..."):
                 try:
@@ -100,17 +141,21 @@ if client:
                     # Hiển thị kết quả
                     st.subheader("🗑️:")
                     st.markdown(response.text)
+
+                    # --- LƯU VÀO LỊCH SỬ ---
+                    st.session_state.history.append({
+                        'time': datetime.now().strftime("%H:%M:%S"),
+                        'input': input_text,
+                        'image': image_source_name if image_to_process else "Không có ảnh",
+                        'response': response.text
+                    })
+                    # ------------------------------------
                     
                 except APIError as e:
-                    # Logic bắt lỗi bạn muốn thêm vào:
+                    # Logic bắt lỗi đã thêm trước đó:
                     if "429" in str(e):
                         st.error("Hôm nay bạn đã dùng hết lượt miễn phí. Vui lòng quay lại vào ngày mai.")
                     elif "quota" in str(e):
-                        # Lỗi 'quota' thường xuất hiện cùng với lỗi 429
-                        # Tuy nhiên, nếu bạn muốn xử lý nó riêng biệt,
-                        # chúng ta sẽ dùng elif. Nếu lỗi 429 đã bắt được,
-                        # code này sẽ không chạy (vì lỗi 429 thường chứa 'quota').
-                        # Tôi dùng elif để tuân thủ logic bạn muốn.
                         st.info("Hiện tại hệ thống đang quá tải. Vui lòng thử lại sau.")
                     else:
                         st.error(f"Lỗi API: {e}")
