@@ -6,7 +6,6 @@ from PIL import Image
 import io
 
 # ⚠️ CẢNH BÁO: Đặt Khóa API trực tiếp vào code không được khuyến nghị!
-# THAY THẾ CHUỖI NÀY BẰNG KHÓA API GEMINI THẬT CỦA BẠN
 MY_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Khởi tạo Client Gemini toàn cục
@@ -94,7 +93,7 @@ if client:
                 try:
                     # Gọi API Gemini
                     response = client.models.generate_content(
-                        model='gemini-2.5-flash', 
+                        model='gemini-1.5-flash', 
                         contents=contents
                     )
                     
