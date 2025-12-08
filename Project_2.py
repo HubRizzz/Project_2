@@ -93,7 +93,7 @@ if client:
                 try:
                     # Gọi API Gemini
                     response = client.models.generate_content(
-                        model='gemini-1.5-flash', 
+                        model='gemini-2.5-flash', 
                         contents=contents
                     )
                     
