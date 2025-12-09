@@ -71,7 +71,7 @@ Nhiệm vụ của bạn:
 Nếu người dùng không cung cấp đủ thông tin (không có ảnh và không có mô tả),
 hãy lịch sự yêu cầu họ cung cấp thêm thông tin.
 
-Hãy chia nhiệm vụ 2, 3, 4 thành từng đoạn văn khác nhau và ghi heading cho từng đoạn: Giải thích:, Hướng dẫn cách xử lý:, Fun fact:.
+Hãy chia nhiệm vụ 2, 3, 4 thành từng đoạn văn khác nhau và ghi heading cho từng đoạn: "Giải thích:", "Hướng dẫn cách xử lý:", "Fun fact:".
 Riêng fun fact thì có thêm gạch chân.
 
 Nhiệm vụ 1 trả lời trong 1 câu , bôi đen loại rác, có đủ chủ ngữ, vị ngữ, đừng ngắn quá và cũng đừng dài quá.
