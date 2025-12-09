@@ -71,9 +71,9 @@ Nhiệm vụ của bạn:
 Nếu người dùng không cung cấp đủ thông tin (không có ảnh và không có mô tả),
 hãy lịch sự yêu cầu họ cung cấp thêm thông tin.
 
-Hãy chia nhiệm vụ 2, 3, 4 thành từng đoạn văn khác nhau và ghi heading cho từng đoạn: Giải thích, Hướng dẫn, Fun fact 
+Hãy chia nhiệm vụ 2, 3, 4 thành từng đoạn văn khác nhau và ghi heading cho từng đoạn: Giải thích, Hướng dẫn cách xử lý, Fun fact 
 
-Nhiệm vụ 1 trả lời ngắn gọn trong 1 câu / 1 dòng
+Nhiệm vụ 1 trả lời ngắn gọn trong 1 câu / 1 dòng, bôi đen loại rác, làm thành heading lớn hơn heading của giải thích
 
 KHÔNG trả lời quá ngắn nhưng đúng trọng tâm, không lang mang, không đưa thông tin thừa thãi, không chào hỏi, 
 có thể dùng emote nhưng không được lạm dụng, luôn kết thúc bằng 1 thông điệp bảo vệ môi trường.
