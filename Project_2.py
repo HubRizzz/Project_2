@@ -71,7 +71,12 @@ Nhiệm vụ của bạn:
 Nếu người dùng không cung cấp đủ thông tin (không có ảnh và không có mô tả),
 hãy lịch sự yêu cầu họ cung cấp thêm thông tin.
 
-KHÔNG trả lời quá ngắn.
+Hãy chia nhiệm vụ 2, 3, 4 thành từng đoạn văn khác nhau và ghi heading cho từng đoạn: Giải thích, Hướng dẫn, Fun fact 
+
+Nhiệm vụ 1 trả lời ngắn gọn trong 1 câu / 1 dòng
+
+KHÔNG trả lời quá ngắn nhưng đúng trọng tâm, không lang mang, không đưa thông tin thừa thãi, không chào hỏi, 
+có thể dùng emote nhưng không được lạm dụng, luôn kết thúc bằng 1 thông điệp bảo vệ môi trường.
 """
 )
 # -----------------------------------------------------------------
@@ -103,7 +108,7 @@ st.sidebar.markdown("""
 👋 **Chào bạn!** Web này giúp bạn:
 - 📸 Chụp ảnh rác  
 - ✍️ Nhập mô tả  
-- 🤖 Nhận tư vấn phân loại
+- 👩‍💻 Nhận tư vấn phân loại
 - 📜 Xem lại lịch sử
 
 ---
@@ -120,7 +125,7 @@ st.sidebar.markdown("""
 
 
 # =========================================================================
-# === KHU VỰC HIỂN THỊ LỊCH SỬ VÀ NÚT XÓA (SIDEBAR) ===
+# === KHU VỰC HIỂN THỊ LỊCH SỬ VÀ NÚT XÓA ===
 # =========================================================================
 
 st.sidebar.markdown("---")
@@ -132,10 +137,10 @@ def clear_history():
 
 if st.session_state.history:
     
-    # NÚT XÓA LỊCH SỬ 
+    # NÚT XÓA LỊCH SỬ (BƯỚC 3)
     st.sidebar.button("🗑️ Xóa toàn bộ lịch sử", on_click=clear_history) 
 
-    # HIỂN THỊ LỊCH SỬ
+    # HIỂN THỊ LỊCH SỬ (BƯỚC 2 - Phiên bản tối ưu hơn)
     for i, item in enumerate(reversed(st.session_state.history), 1):
         with st.sidebar.expander(f"🔹 Lần {i} - [{item['time']}]"):
             st.markdown(f"**Nguồn ảnh:** {item['image']}")
@@ -147,26 +152,27 @@ else:
 
 
 # =========================================================================
-# === KHU VỰC CHÍNH CỦA ỨNG DỤNG (CÓ TAB) ===
+# === KHU VỰC CHÍNH CỦA ỨNG DỤNG ===
 # =========================================================================
 
 st.title("🚮 Trang Web Hỗ Trợ Phân Loại Rác & Bảo Vệ Môi Trường")
 
-# ✅ BƯỚC 1 — TẠO TAB MENU
+# TẠO TAB MENU
 tab1, tab2 = st.tabs(["♻️ Phân loại rác", "📊 Thống kê & Insight"])
 
 
-# ✅ BƯỚC 2 — BỌC TOÀN BỘ CODE PHÂN LOẠI VÀO tab1
+# BỌC TOÀN BỘ CODE PHÂN LOẠI VÀO tab1
 with tab1:
     st.info(f"AI đang hoạt động với vai trò: **Chuyên gia Phân loại Rác**")
 
-    if client: 
+    # Loại bỏ logic if client: cũ, do đã giả định client=True ở trên
+    if True: 
         # --- Thiết lập Cổng nhập liệu Ảnh và Văn bản ---
 
-        # 1. Khu vực Chụp Ảnh trực tiếp (ƯU TIÊN HÀNG ĐẦU)
+        # Khu vực Chụp Ảnh trực tiếp (ƯU TIÊN HÀNG ĐẦU)
         camera_image = st.camera_input("📸 Bước 1: Chụp ảnh rác bạn muốn phân loại")
 
-        # 2. Khu vực Tải lên Tệp (Dự phòng)
+        # Khu vực Tải lên Tệp (Dự phòng)
         uploaded_file = st.file_uploader(
             "Hoặc Tải lên hình ảnh về rác bạn muốn phân loại (JPG, PNG)", 
             type=["jpg", "jpeg", "png"]
@@ -241,20 +247,13 @@ with tab1:
                         error_str = str(e)
                         
                         if "429" in error_str:
-                            # Bao gồm lỗi failover cuối cùng (cũng có 429) và lỗi hết hạn mức ngày
+                            # HIỂN THỊ KHI TẤT CẢ CÁC KHÓA FAIL (Lỗi 429)
                             st.error("Hôm nay bạn đã dùng hết lượt miễn phí. Vui lòng quay lại vào ngày mai.")
-                        elif "quota" in error_str:
-                            # Bao gồm lỗi quá tải hệ thống/quota tạm thời
-                            st.info("Hiện tại hệ thống đang quá tải. Vui lòng thử lại sau.")
                         else:
-                            # Các lỗi khác (403, lỗi mô hình, lỗi không xác định) đều hiện lỗi API
-                            st.error(f"Lỗi API: {e}")
+                            # HIỂN THỊ CHO TẤT CẢ CÁC LỖI API KHÁC (bao gồm 403, quota, model error)
+                            st.info("Hiện tại hệ thống đang quá tải. Vui lòng thử lại sau.")
                     except Exception as e:
                         st.error(f"Lỗi không xác định: {e}")
-
-    else:
-        # Lỗi nếu không tìm thấy bất kỳ Khóa API nào
-        st.error("Không tìm thấy Khóa API hợp lệ (GEMINI_API_KEY_1, _2, _3) nào. Vui lòng kiểm tra Secrets.")
 
 
 # ✅ BƯỚC 4 — TẠO TAB 2: THỐNG KÊ + BIỂU ĐỒ + INSIGHT
