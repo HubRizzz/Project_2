@@ -42,17 +42,12 @@ def safe_generate_content(model, contents):
             
         except APIError as e:
             error_str = str(e)
-            
-            # Nếu là lỗi 429 hoặc lỗi khác, CẦN TIẾP TỤC mà KHÔNG THÔNG BÁO
-            # để thử Khóa API tiếp theo
             if "429" in error_str or "PERMISSION_DENIED" in error_str or "403" in error_str:
                 continue 
             
             # Nếu là lỗi API khác (ví dụ: mô hình không tồn tại), báo lỗi và thoát
             raise e 
         
-    # Nếu tất cả các Khóa API đều thất bại do 429 hoặc 403, 
-    # TA PHẢI RAISE MỘT LỖI CÓ CHỨA '429' (Giả lập hết hạn mức ngày)
     raise APIError("429 RESOURCE_EXHAUSTED: All keys failed due to quota.")
 # -----------------------------------------------------------------
 
@@ -86,7 +81,7 @@ có thể dùng emote nhưng không được lạm dụng, luôn kết thúc b�
 if 'history' not in st.session_state:
     st.session_state.history = []
 
-# ✅ BƯỚC 3 — THÊM DỮ LIỆU MẪU (ĐỂ DEMO)
+# THÊM DỮ LIỆU MẪU (ĐỂ DEMO)
 sample_data = [
     {"response": "rác tái chế"},
     {"response": "chai nhựa nên vào thùng tái chế"},
@@ -138,10 +133,10 @@ def clear_history():
 
 if st.session_state.history:
     
-    # NÚT XÓA LỊCH SỬ (BƯỚC 3)
+    # NÚT XÓA LỊCH SỬ 
     st.sidebar.button("🗑️ Xóa toàn bộ lịch sử", on_click=clear_history) 
 
-    # HIỂN THỊ LỊCH SỬ (BƯỚC 2 - Phiên bản tối ưu hơn)
+    # HIỂN THỊ LỊCH SỬ 
     for i, item in enumerate(reversed(st.session_state.history), 1):
         with st.sidebar.expander(f"🔹 Lần {i} - [{item['time']}]"):
             st.markdown(f"**Nguồn ảnh:** {item['image']}")
@@ -166,7 +161,6 @@ tab1, tab2 = st.tabs(["♻️ Phân loại rác", "📊 Thống kê & Insight"])
 with tab1:
     st.info(f"AI đang hoạt động với vai trò: **Chuyên gia Phân loại Rác**")
 
-    # Loại bỏ logic if client: cũ, do đã giả định client=True ở trên
     if True: 
         # --- Thiết lập Cổng nhập liệu Ảnh và Văn bản ---
 
@@ -257,7 +251,7 @@ with tab1:
                         st.error(f"Lỗi không xác định: {e}")
 
 
-# ✅ BƯỚC 4 — TẠO TAB 2: THỐNG KÊ + BIỂU ĐỒ + INSIGHT
+# TẠO TAB 2: THỐNG KÊ + BIỂU ĐỒ + INSIGHT
 with tab2:
     st.header("📊 Thống kê phân loại rác")
 
@@ -275,7 +269,6 @@ with tab2:
     other = 0
 
     for item in data_to_use:
-        # CHÚ Ý: ĐÃ SỬA TÊN KHÓA TỪ 'result' SANG 'response' để khớp với code lưu lịch sử
         text = item["response"].lower() 
         if "tái chế" in text or "tái" in text:
             recycle += 1
